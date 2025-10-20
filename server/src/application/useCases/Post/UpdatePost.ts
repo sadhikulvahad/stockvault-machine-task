@@ -18,6 +18,7 @@ export class UpdatePost implements IUpdatePostRepo {
             throw new AppError('Post not found', 404)
         }
 
+        console.log(newImageName)
         let imageUrl;
         if (newImageName) {
             imageUrl = newImageName;

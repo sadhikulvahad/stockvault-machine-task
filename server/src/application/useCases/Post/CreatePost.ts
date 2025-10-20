@@ -40,8 +40,9 @@ export class CreatePost implements ICreatePostRepo {
             authorId: new Types.ObjectId(authorId),
             title: titles[index] || "Untitled",
             imageUrl: file.filename,
-            imagePosition: lastPost?.imagePosition.valueOf() || 0 + 1,
+            imagePosition: (lastPost?.imagePosition.valueOf() ?? 0) + 1 + index,
         }));
+
 
         return await this._postRepository.insertMany(posts);
 

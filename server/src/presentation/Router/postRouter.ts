@@ -13,12 +13,12 @@ const multerService = container.get<MulterService>(TYPES.MulterService)
 
 const authMidlware = container.get<AuthMidlware>(TYPES.AuthMiddlware)
 
-router.use(authMidlware.auth.bind(authMidlware))
+// router.use(authMidlware.auth.bind(authMidlware))
 
 router.get('/', postController.getPosts.bind(postController))
 router.post('/', multerService.uploadPost, postController.createPost.bind(postController))
 router.put('/:imagePosition', multerService.uploadPost, postController.updatePost.bind(postController))
-router.put('/update-position', postController.updatePosition.bind(postController))
+router.post('/update-position', postController.updatePosition.bind(postController))
 router.delete('/:postId', postController.deletePost.bind(postController))
 
 export default router;

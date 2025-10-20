@@ -74,7 +74,7 @@ export const updatePost = async (position: number, formData: FormData) => {
 
 export const changePosition = async (imageOne: number, imageTwo: number) => {
     try {
-        const response = await axiosInstance.put(API_ENDPOINTS.POST.UPDATE_POSITION, { imageOne, imageTwo })
+        const response = await axiosInstance.post(API_ENDPOINTS.POST.UPDATE_POSITION, { imageOne, imageTwo })
         return response
     } catch (error) {
         if (axios.isAxiosError(error)) {

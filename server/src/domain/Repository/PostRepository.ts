@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { PostDTO } from "../../application/dto";
 import { IPostRepository } from "../../infrastructure/DataBase/Interface/IPostRepository";
 import { PostModel } from "../../infrastructure/DataBase/Models/PostModel";
@@ -28,24 +29,24 @@ export class PostRepository extends BaseRepository<Post> implements IPostReposit
 
     async findByImagePositionAndUpdate(position: number): Promise<void> {
         await this.model.updateOne(
-            { imagePosition: position },
+            { imagePosition: position, isDeleted: false },
             { $set: { isDeleted: true } }
         );
     }
 
     async findByImagePosition(position: number): Promise<PostDTO | null> {
-        const post = await this.model.findOne({ imagePosition: position }).lean();
+        const post = await this.model.findOne({ imagePosition: position, isDeleted: false }).lean();
         return post as PostDTO | null;
     }
 
     async updateImagePosition(postId: string, newPosition: number): Promise<void> {
-        await this.model.updateOne({ _id: postId }, { imagePosition: newPosition });
+        await this.model.updateOne({ _id: postId, isDeleted: false }, { imagePosition: newPosition });
     }
 
     async updateImage(position: number, updateData: Partial<PostDTO>): Promise<PostDTO | null> {
         const updatedPost = await this.model
             .findOneAndUpdate(
-                { imagePosition: position },
+                { imagePosition: position, isDeleted: false },
                 { $set: updateData },
                 { new: true }
             )
