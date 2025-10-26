@@ -2,5 +2,5 @@ import { PostDTO } from "../dto";
 
 
 export interface IUpdatePositionRepo {
-    execute(positionOne: number, positionTwo: number): Promise<void>
+    execute(positionOneId: string, positionTwoId: string): Promise<void>
 }

@@ -12,20 +12,20 @@ export class UpdatePosition implements IUpdatePositionRepo {
         @inject(TYPES.IPostRepository) private _postRepository: IPostRepository
     ) { }
 
-    async execute(positionOne: number, positionTwo: number): Promise<void> {
+    async execute(positionOneId: string, positionTwoId: string): Promise<void> {
 
-        if (!positionOne || !positionTwo) {
+        if (!positionOneId || !positionTwoId) {
             throw new AppError('Image Positions are not mentioned', 400)
         }
 
-        const imageOne = await this._postRepository.findByImagePosition(positionOne)
+        const imageOne = await this._postRepository.findByImagePosition(positionOneId)
 
         if (!imageOne) {
             throw new AppError("Image is not found", 400)
         }
 
 
-        const imageTwo = await this._postRepository.findByImagePosition(positionTwo)
+        const imageTwo = await this._postRepository.findByImagePosition(positionTwoId)
 
         if (!imageTwo) {
             throw new AppError("Image is not found", 400)

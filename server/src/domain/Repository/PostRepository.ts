@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { PostDTO } from "../../application/dto";
 import { IPostRepository } from "../../infrastructure/DataBase/Interface/IPostRepository";
 import { PostModel } from "../../infrastructure/DataBase/Models/PostModel";
@@ -13,9 +12,10 @@ export class PostRepository extends BaseRepository<Post> implements IPostReposit
     }
 
     async findByAuthorId(authorId: string): Promise<PostDTO[]> {
-        const docs = await this.model.find({ authorId, isDeleted: false },).sort({ imagePosition: 1 }).lean().exec();
+        const docs = await this.model.find({ authorId, isDeleted: false },).sort({ imagePosition: 1 }).lean<PostDTO[]>().exec();
 
         const posts: PostDTO[] = docs.map(doc => ({
+            _id: doc._id,
             title: doc.title,
             authorId: doc.authorId,
             imageUrl: doc.imageUrl,
@@ -27,15 +27,15 @@ export class PostRepository extends BaseRepository<Post> implements IPostReposit
         return posts;
     }
 
-    async findByImagePositionAndUpdate(position: number): Promise<void> {
+    async deletePost(postId: string): Promise<void> {
         await this.model.updateOne(
-            { imagePosition: position, isDeleted: false },
+            { _id: postId, isDeleted: false },
             { $set: { isDeleted: true } }
         );
     }
 
-    async findByImagePosition(position: number): Promise<PostDTO | null> {
-        const post = await this.model.findOne({ imagePosition: position, isDeleted: false }).lean();
+    async findByImagePosition(id: string): Promise<PostDTO | null> {
+        const post = await this.model.findOne({ _id: id, isDeleted: false }).lean();
         return post as PostDTO | null;
     }
 
@@ -43,10 +43,10 @@ export class PostRepository extends BaseRepository<Post> implements IPostReposit
         await this.model.updateOne({ _id: postId, isDeleted: false }, { imagePosition: newPosition });
     }
 
-    async updateImage(position: number, updateData: Partial<PostDTO>): Promise<PostDTO | null> {
+    async updateImage(id: string, updateData: Partial<PostDTO>): Promise<PostDTO | null> {
         const updatedPost = await this.model
             .findOneAndUpdate(
-                { imagePosition: position, isDeleted: false },
+                { _id: id, isDeleted: false },
                 { $set: updateData },
                 { new: true }
             )

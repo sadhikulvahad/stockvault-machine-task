@@ -11,14 +11,14 @@ import {
 import { toast } from "sonner";
 
 interface ImageItem {
-  id: number;
+  _id: number;
   imageUrl: string;
   title: string;
   imagePosition?: number;
 }
 
 interface PendingImage {
-  id: number;
+  _id: number;
   file: File;
   imageUrl: string;
   title: string;
@@ -41,6 +41,7 @@ export default function StockImagePlatform() {
 
   const fetchPosts = async () => {
     const response = await getposts();
+    console.log(response)
     if (response?.status === 200) {
       setImages(response.data.posts);
     }
@@ -86,8 +87,8 @@ export default function StockImagePlatform() {
     setDraggedItem(index);
 
     changePosition(
-      newImages[draggedItem].imagePosition!,
-      newImages[index].imagePosition!
+      newImages[draggedItem]._id!,
+      newImages[index]._id!
     );
   };
 
@@ -140,7 +141,7 @@ export default function StockImagePlatform() {
       const reader = new FileReader();
       reader.onload = (event) => {
         const pending: PendingImage = {
-          id: Date.now() + Math.random(),
+          _id: Date.now() + Math.random(),
           file: file,
           imageUrl: event.target?.result as string,
           title: file.name.replace(/\.[^/.]+$/, ""),
@@ -159,12 +160,12 @@ export default function StockImagePlatform() {
 
   const handlePendingTitleChange = (id: number, newTitle: string) => {
     setPendingImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, title: newTitle } : img))
+      prev.map((img) => (img._id === id ? { ...img, title: newTitle } : img))
     );
   };
 
   const handleRemovePending = (id: number) => {
-    setPendingImages((prev) => prev.filter((img) => img.id !== id));
+    setPendingImages((prev) => prev.filter((img) => img._id !== id));
   };
 
   const handleUploadAll = async () => {
@@ -185,7 +186,7 @@ export default function StockImagePlatform() {
 
       if (response?.status === 201) {
         const newImages = pendingImages.map((pending) => ({
-          id: pending.id,
+          _id: pending._id,
           imageUrl: pending.imageUrl,
           title: pending.title || "Untitled",
           imagePosition: pending.imagePosition,
@@ -206,7 +207,7 @@ export default function StockImagePlatform() {
   };
 
   const startEditing = (image: ImageItem) => {
-    setEditingId(image.imagePosition!);
+    setEditingId(image._id!);
     setEditTitle(image.title);
     setEditImageFile(null);
     setEditPreviewUrl(image.imageUrl); // Add this line
@@ -228,8 +229,8 @@ export default function StockImagePlatform() {
   const saveEdit = async () => {
     if (editingId === null) return;
 
-    const imageToUpdate = images.find((img) => img.imagePosition === editingId);
-    if (!imageToUpdate?.imagePosition) return;
+    const imageToUpdate = images.find((img) => img._id === editingId);
+    if (!imageToUpdate?._id) return;
 
     try {
       const formData = new FormData();
@@ -240,14 +241,14 @@ export default function StockImagePlatform() {
         formData.append("posts", editImageFile);
       }
 
-      const response = await updatePost(imageToUpdate.imagePosition, formData);
+      const response = await updatePost(imageToUpdate._id, formData);
 
       if (response?.status === 200) {
         const updatedimage = response.data.post;
 
         setImages((prev) =>
           prev.map((img) =>
-            img.imagePosition === editingId
+            img._id === editingId
               ? {
                   ...img,
                   title: updatedimage.title,
@@ -283,7 +284,7 @@ export default function StockImagePlatform() {
       const response = await deletePost(id);
       if (response?.status === 200) {
         setImages((prev) =>
-          prev.filter((img) => img.imagePosition?.toString() !== id)
+          prev.filter((img) => img._id?.toString() !== id)
         );
       }
     } catch (error) {
@@ -332,14 +333,14 @@ export default function StockImagePlatform() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {images?.map((image, index) => (
               <div
-                key={image.id}
-                draggable={editingId !== image.imagePosition}
+                key={image._id}
+                draggable={editingId !== image._id}
                 onDragStart={(e) => handleDragStart(e, index)}
                 onDragEnd={handleDragEnd}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragLeave={handleDragLeave}
                 className={`group relative bg-gray-800 rounded-lg overflow-hidden transition-all ${
-                  editingId === image.imagePosition
+                  editingId === image._id
                     ? "ring-2 ring-gray-500"
                     : "cursor-move"
                 } ${draggedItem === index ? "opacity-50 scale-95" : ""} ${
@@ -347,14 +348,14 @@ export default function StockImagePlatform() {
                     ? "ring-2 ring-gray-500"
                     : ""
                 } ${
-                  editingId !== image.imagePosition &&
+                  editingId !== image._id &&
                   "hover:ring-2 hover:ring-gray-400"
                 }`}
               >
                 <div className="aspect-video overflow-hidden">
                   <img
                     src={
-                      editingId === image.imagePosition && editPreviewUrl
+                      editingId === image._id && editPreviewUrl
                         ? editPreviewUrl // NEW IMAGE PREVIEW ONLY FOR EDITING IMAGE
                         : image.imageUrl // ORIGINAL FOR ALL OTHERS
                     }
@@ -364,7 +365,7 @@ export default function StockImagePlatform() {
                   />
                 </div>
 
-                {editingId === image.imagePosition ? (
+                {editingId === image._id ? (
                   <div className="p-4 space-y-3">
                     <input
                       type="text"
@@ -410,7 +411,7 @@ export default function StockImagePlatform() {
                   </div>
                 )}
 
-                {editingId !== image.imagePosition && (
+                {editingId !== image._id && (
                   <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => startEditing(image)}
@@ -420,7 +421,7 @@ export default function StockImagePlatform() {
                     </button>
                     <button
                       onClick={() =>
-                        deleteImage(image?.imagePosition?.toString() || "")
+                        deleteImage(image?._id?.toString() || "")
                       }
                       className="bg-red-600 hover:bg-red-700 p-2 rounded-full transition-colors"
                     >
@@ -461,13 +462,13 @@ export default function StockImagePlatform() {
                 <div className="space-y-4">
                   {pendingImages.map((pending, idx) => (
                     <div
-                      key={pending.id}
+                      key={pending._id}
                       className="bg-gray-700 rounded-lg p-4 flex gap-4"
                     >
                       <div className="aspect-video overflow-hidden">
                         <img
                           src={
-                            editingId === pending.imagePosition
+                            editingId === pending._id
                               ? editPreviewUrl || pending.imageUrl
                               : pending.imageUrl
                           }
@@ -484,14 +485,14 @@ export default function StockImagePlatform() {
                           type="text"
                           value={pending.title}
                           onChange={(e) =>
-                            handlePendingTitleChange(pending.id, e.target.value)
+                            handlePendingTitleChange(pending._id, e.target.value)
                           }
                           className="bg-gray-600 text-white px-3 py-2 rounded border border-gray-500 focus:border-gray-500 focus:outline-none"
                           placeholder="Enter image title"
                         />
                       </div>
                       <button
-                        onClick={() => handleRemovePending(pending.id)}
+                        onClick={() => handleRemovePending(pending._id)}
                         className="text-red-400 hover:text-red-300 transition-colors p-2"
                       >
                         <Trash2 className="w-5 h-5" />

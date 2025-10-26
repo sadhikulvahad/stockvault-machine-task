@@ -57,9 +57,9 @@ export const deletePost = async (postId: string) => {
 }
 
 
-export const updatePost = async (position: number, formData: FormData) => {
+export const updatePost = async (id: number, formData: FormData) => {
     try {
-        const response = await axiosInstance.put(`${API_ENDPOINTS.POST.UPDATE_POST}${position}`, formData)
+        const response = await axiosInstance.put(`${API_ENDPOINTS.POST.UPDATE_POST}${id}`, formData)
         return response
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -72,9 +72,9 @@ export const updatePost = async (position: number, formData: FormData) => {
     }
 }
 
-export const changePosition = async (imageOne: number, imageTwo: number) => {
+export const changePosition = async (imageOneId: number, imageTwoId: number) => {
     try {
-        const response = await axiosInstance.post(API_ENDPOINTS.POST.UPDATE_POSITION, { imageOne, imageTwo })
+        const response = await axiosInstance.post(API_ENDPOINTS.POST.UPDATE_POSITION, { imageOneId, imageTwoId })
         return response
     } catch (error) {
         if (axios.isAxiosError(error)) {

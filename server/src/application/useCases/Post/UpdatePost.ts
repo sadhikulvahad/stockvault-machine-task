@@ -12,8 +12,8 @@ export class UpdatePost implements IUpdatePostRepo {
         @inject(TYPES.IPostRepository) private _postRepository: IPostRepository
     ) { }
 
-    async execute(position: string, newImageName: string | undefined, title: string): Promise<PostDTO | null> {
-        const existingPost = await this._postRepository.findByImagePosition(Number(position));
+    async execute(id: string, newImageName: string | undefined, title: string): Promise<PostDTO | null> {
+        const existingPost = await this._postRepository.findByImagePosition(id);
         if (!existingPost) {
             throw new AppError('Post not found', 404)
         }
@@ -25,7 +25,7 @@ export class UpdatePost implements IUpdatePostRepo {
         } else {
             imageUrl = existingPost.imageUrl
         }
-        const updatedPost = await this._postRepository.updateImage(Number(position), { imageUrl: imageUrl, title: title });
+        const updatedPost = await this._postRepository.updateImage(id, { imageUrl: imageUrl, title: title });
 
         return updatedPost
     }

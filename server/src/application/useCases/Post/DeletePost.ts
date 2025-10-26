@@ -18,7 +18,7 @@ export class DeletePosts implements IDeletePosts {
             throw new AppError("Post missing", 400)
         }
 
-        return this._postRepository.findByImagePositionAndUpdate(Number(postId))
+        return this._postRepository.deletePost(postId)
     }
 
 }

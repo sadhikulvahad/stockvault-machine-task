@@ -64,7 +64,7 @@ export class PostController {
 
     async updatePost(req: Request, res: Response) {
         try {
-            const { imagePosition } = req.params
+            const { id } = req.params
             const { title } = req.body
             const files = req.files as Express.Multer.File[]
 
@@ -76,7 +76,7 @@ export class PostController {
 
             // Find the existing post
 
-            const updatedPost = await this._updatePosts.execute(imagePosition, newImageName!, title)
+            const updatedPost = await this._updatePosts.execute(id, newImageName!, title)
 
             res.status(200).json({
                 success: true,
@@ -107,13 +107,13 @@ export class PostController {
 
     async updatePosition(req: Request, res: Response) {
         try {
-            const { imageOne, imageTwo } = req.body
+            const { imageOneId, imageTwoId } = req.body
 
-            if (!imageOne || !imageTwo) {
+            if (!imageOneId || !imageTwoId) {
                 return res.status(400).json({ message: "Image Positions are not mentioned" })
             }
 
-            await this._updatePosition.execute(imageOne, imageTwo)
+            await this._updatePosition.execute(imageOneId, imageTwoId)
 
             return res.status(200).json({ message: 'Position changed successfully' })
 

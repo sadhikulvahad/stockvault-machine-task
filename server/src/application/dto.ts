@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 
 
 export interface LoginDTO {
@@ -18,7 +19,7 @@ export type SafeUserDTO = {
 };
 
 export interface PostDTO {
-    _id?: string
+    _id?: string | ObjectId
     title: string;
     authorId: string;
     imageUrl: string;
